@@ -1,15 +1,18 @@
-﻿// lamba
-// serve per creare funzioni anonime (usa e getta)
-// action (non ritornano un valore)
-// func (ritornano un valore)
-List<int> numeri = [1, 2, 3, 4];
-
-numeri.ForEach(x =>
+﻿void LogTitolo(string titolo)
 {
-    Console.WriteLine(x);
-});
+    Console.WriteLine();
+    Console.ForegroundColor = ConsoleColor.DarkGreen;
+    Console.WriteLine(titolo + ":");
+    Console.ResetColor();
+}
 
-var quadrati = numeri.Select(x => x * x);
+LogTitolo("Cartella root");
+var root = Directory.GetCurrentDirectory();
+Console.WriteLine(root);
 
-Console.WriteLine(string.Join(",", quadrati));
-
+// informazioni sulla directory
+var rootInfo = new DirectoryInfo(root);
+LogTitolo("rootInfo.Name");
+Console.WriteLine(rootInfo.Name);
+LogTitolo("rootInfo.Parent");
+Console.WriteLine(rootInfo.Parent);
