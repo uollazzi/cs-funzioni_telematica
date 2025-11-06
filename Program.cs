@@ -1,55 +1,76 @@
-﻿// valori di ritorno
-using System.Reflection.Metadata;
-
-void Saluta()
+﻿int AggiungiUno(int numero)
 {
-    Console.WriteLine($"Ciao, sono le {DateTime.Now}");
-    Thread.Sleep(1000);
+    return numero + 1;
 }
 
+int Somma(int n1, int n2)
+{
+    return n1 + n2;
+}
+
+var risultato = Somma(3, 5);
+
+risultato = Somma(n2: 6, n1: 9);
+
+// C# passa i parametri come valore
+// cioè di default, passa una copia della variabile
+void quadratoByVal(int valParameter)
+{
+    valParameter *= valParameter;
+}
+
+int numero = 4;
+quadratoByVal(numero);
+Console.WriteLine(numero);
+
+void quadratoByRef(ref int refParameter)
+{
+    refParameter *= refParameter;
+}
+quadratoByRef(ref numero);
+Console.WriteLine(numero);
+
+// output
+string dieci = "10";
+int rr;
+bool ok = int.TryParse(dieci, out rr);
+Console.WriteLine($"Riuscito: {ok}, risultato: {rr}");
+
+// numero parametri variabile
+int SommaMultipla(params int[] numeri)
+{
+    int r = 0;
+    foreach (var n in numeri)
+    {
+        r += n;
+    }
+
+    return r;
+}
+
+Console.WriteLine(SommaMultipla(5, 7, 4, 8));
+Console.WriteLine(SommaMultipla(5, 7, 4, 8, 7, 34, 56, 7));
+
+// parametri di default (facoltativi)
+void Saluta(string nome = "a tutti")
+{
+    Console.WriteLine($"Ciao {nome}");
+}
+Saluta("Pippo");
 Saluta();
 
-string RitornaUnSaluto()
+void SalutaNVolte(string nome, string saluto = "Ciao", int volte = 3)
 {
-    return $"Ciao, sono le {DateTime.Now}";
+    for (int i = 0; i < volte; i++)
+    {
+        Console.WriteLine($"{saluto} {nome}");
+    }
 }
 
-for (int i = 0; i < 5; i++)
-{
-    string saluto = RitornaUnSaluto();
-    Console.WriteLine(saluto);
+SalutaNVolte("Bruno");
+SalutaNVolte("Vario", "Salve");
+SalutaNVolte("Anna", "Buongiorno", 8);
 
-    // Console.WriteLine(RitornaUnSaluto()); // oppure
-    // Thread.Sleep(1000);
-}
+// salutare Luisa 5 volte senza sovrascrivere "Ciao"
+SalutaNVolte("Luisa", volte: 5);
 
-// tupla
-bool maggiorenne = true;
-(int, string) tupla = (3, "ciao");
-var tupla2 = (4, 9.5m, "ciao");
-
-Console.WriteLine($"{tupla.Item1} e {tupla.Item2}");
-
-(int eta, string nome, bool sposato) tupla3 = (14, "Mario", true);
-
-(string nome, List<string> invitati) evento = ("Sagra della Salsiccia", ["Gigi", "Mario", "Anna"]);
-foreach (var invitato in evento.invitati)
-{
-    Console.WriteLine(invitato);
-}
-
-int TiraUnDado()
-{
-    Random rnd = new Random();
-
-    return rnd.Next(1, 7);
-}
-
-(int rosso, int blu) TiraDueDadi()
-{
-    return (TiraUnDado(), TiraUnDado());
-}
-
-var r = TiraDueDadi();
-Console.WriteLine($"Rosso: {r.rosso}");
-Console.WriteLine($"Blu: {r.blu}");
