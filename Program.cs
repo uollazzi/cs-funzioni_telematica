@@ -1,4 +1,6 @@
-﻿void LogTitolo(string titolo)
+﻿using System.Globalization;
+
+void LogTitolo(string titolo)
 {
     Console.WriteLine();
     Console.ForegroundColor = ConsoleColor.DarkGreen;
@@ -6,91 +8,66 @@
     Console.ResetColor();
 }
 
-LogTitolo("Cartella root");
-var root = Directory.GetCurrentDirectory();
-Console.WriteLine(root);
+var oggi = DateTime.Now;
+LogTitolo("Data di oggi");
+Console.WriteLine(oggi);
 
-// informazioni sulla directory
-var rootInfo = new DirectoryInfo(root);
-LogTitolo("rootInfo.Name");
-Console.WriteLine(rootInfo.Name);
-LogTitolo("rootInfo.Parent");
-Console.WriteLine(rootInfo.Parent);
+var ora = oggi.TimeOfDay;
+LogTitolo("Orario");
+Console.WriteLine(ora);
 
-var dirs = Directory.GetDirectories(root); // ritorna path assoluti
+// creare una data
+var scopertaAmerica = new DateTime(1492, 10, 12);
+var durata = new TimeSpan(23, 16, 0); // durata, un lasso di tempo (usata anche per definire le ore)
 
-LogTitolo("Lista directories di root");
-Console.WriteLine(string.Join("\n", dirs));
+scopertaAmerica = scopertaAmerica.Add(durata);
+LogTitolo("Date e ora scoperta America");
+Console.WriteLine(scopertaAmerica);
 
-dirs = Directory.GetDirectories("documenti"); // ritorna path relativi
+// DateTimeOffset = Date + Time + Offset
+var oggiUTC = DateTimeOffset.UtcNow;
+Console.WriteLine(oggiUTC);
+Console.WriteLine(oggiUTC.LocalDateTime);
 
+var data = DateTimeOffset.FromUnixTimeSeconds(1762941726);
+Console.WriteLine(data.LocalDateTime);
 
-LogTitolo("Lista directories di documenti");
-Console.WriteLine(string.Join("\n", dirs));
+Console.WriteLine(((DateTimeOffset)scopertaAmerica).ToUnixTimeSeconds());
 
-// creazione directory
-// documenti/foto
-Directory.CreateDirectory(@"C:\Progetti\Tutorials\Planet\dotNET\cs-funzioni\documenti\foto");
+// formattazione
+LogTitolo("DateTime formattazione");
+Console.WriteLine(oggi.ToString());
+Console.WriteLine(oggi.ToShortDateString());
+Console.WriteLine(oggi.ToLongDateString());
+Console.WriteLine(oggi.ToShortTimeString());
+Console.WriteLine(oggi.ToString("ddd, dd MMMM yyyy HH:mm"));
+Console.WriteLine(oggi.ToString("ddd, dd MMMM yyyy HH:mm", new CultureInfo("en-EN")));
 
-Directory.CreateDirectory(Path.Join(root, "documenti/video"));
+// parsing
+DateTime d;
+bool isSuccess = DateTime.TryParse("22/10/2025", out d);
 
-rootInfo.CreateSubdirectory("documenti/musica");
+LogTitolo("Parsing data");
+Console.WriteLine(isSuccess);
+Console.WriteLine(d);
 
-// files
-var files = Directory.GetFiles(Path.Combine("documenti", "fatture", "2021"));
+isSuccess = DateTime.TryParse("10-22-2025", new CultureInfo("en-US"), out d);
 
-LogTitolo("Lista files");
-Console.WriteLine(string.Join("\n", files));
+LogTitolo("Parsing data");
+Console.WriteLine(isSuccess);
+Console.WriteLine(d);
 
-files = Directory.GetFiles("documenti", "*.pdf", SearchOption.AllDirectories);
+isSuccess = DateTime.TryParseExact("10-22-2025 12:37", "MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out d);
 
-LogTitolo("Lista files pdf");
-Console.WriteLine(string.Join("\n", files));
+LogTitolo("Parsing data");
+Console.WriteLine(isSuccess);
+Console.WriteLine(d.ToString());
 
-var filesInfo = rootInfo.GetFiles("*.pdf", SearchOption.AllDirectories);
-LogTitolo("Lista files Info");
+var ieri = oggi.AddDays(-1);
+LogTitolo("Ieri");
+Console.WriteLine(ieri);
 
-foreach (var file in filesInfo)
-{
-    Console.WriteLine($"{file.Name} {file.CreationTime}");
-}
-
-// lettura files di testo
-var filePath = Path.Combine("documenti", "preventivi", "todo.txt");
-
-LogTitolo("Lettura file di testo");
-var testo = File.ReadAllText(filePath);
-Console.WriteLine(testo);
-
-var righe = File.ReadAllLines(filePath);
-
-var numeroRiga = 1;
-foreach (var riga in righe)
-{
-    Console.WriteLine($"{numeroRiga} - {riga}");
-    numeroRiga++;
-}
-
-// scrittura file di testo
-var fileDaScriverePath = Path.Combine("documenti", "preventivi", "note2.txt");
-List<string> note = ["Ciao", "sono", "Groot"];
-File.WriteAllLines(fileDaScriverePath, note);
-
-File.WriteAllText(fileDaScriverePath, "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Laudantium, reiciendis? Vero accusantium earum veniam odit reprehenderit totam id in impedit ea optio ullam, error amet nobis libero ratione repellat similique accusamus sapiente recusandae molestiae commodi voluptate iusto adipisci minus. In est quae iste exercitationem esse quam at nisi obcaecati expedita.");
-
-File.AppendAllLines(fileDaScriverePath, note);
-
-// copiare un file
-string fileName = "f1.pdf";
-string cartellaFatture = Path.Combine("documenti", "fatture");
-string cartellaSorgente = Path.Combine(cartellaFatture, "2020");
-string cartellaDestinazione = Path.Combine(cartellaFatture, "2021");
-
-if (
-    File.Exists(Path.Combine(cartellaSorgente, fileName)) &&
-    !File.Exists(Path.Combine(cartellaDestinazione, "f3.pdf"))
-)
-{
-    File.Copy(Path.Combine(cartellaSorgente, fileName), Path.Combine(cartellaDestinazione, "f3.pdf"));
-    Console.WriteLine("Copia effettuata");
-}
+LogTitolo("Da quanto esiste l'America?");
+var tempoPassato = oggi - scopertaAmerica;
+Console.WriteLine((int)(tempoPassato.TotalDays / 365));
+Console.WriteLine(Math.Floor(tempoPassato.TotalDays / 365));
