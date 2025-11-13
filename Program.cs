@@ -1,76 +1,101 @@
-﻿/*
-Scrivere un programma che visualizzi la cartella "documenti"
-in console come da esempio nel file screenshot.png
-
-- Creare un programma dinamico,
-  che cioè si adatti alla struttura delle cartelle nel momento in cui le modifichiamo
-  senza che sia necessario riscrivere il programma
-- Cercate di utilizzare delle funzioni per parti del programma che si ripetono.
-- Le cartelle devono essere visualizzate con un colore diverso dai files.
-- I files modificati da meno di 5 minuti devono assumere un colore diverso
-- I files modificati da meno di 30 minuti (ma da più di 5) devono assumere un colore ancora diverso
-*/
-var oggi = DateTime.Now;
-
-void Esamina(DirectoryInfo dir, int livello = 0)
+﻿void LogTitolo(string titolo)
 {
-    LogDIrectory(dir, livello);
-
-    DirectoryInfo[] subDirs = [];
-    FileInfo[] files = [];
-
-    // cerco le sottodirectory
-    subDirs = dir.GetDirectories();
-    foreach (var dirInfo in subDirs)
-    {
-        Esamina(dirInfo, livello + 1);
-    }
-
-    files = dir.GetFiles();
-    foreach (var fileInfo in files)
-    {
-        LogFile(fileInfo, livello + 1);
-    }
-}
-
-void LogDIrectory(DirectoryInfo dirInfo, int livello)
-{
+    Console.WriteLine("");
     Console.ForegroundColor = ConsoleColor.DarkGreen;
-    Console.WriteLine($"{GetSeparatore(livello)}{dirInfo.Name}");
+    Console.WriteLine(titolo + ":");
     Console.ResetColor();
 }
 
-void LogFile(FileInfo fi, int livello)
+LogTitolo("Eccezioni comuni di sistema");
+
+var n = 2;
+var m = 0;
+
+// Console.WriteLine("Divisione per zero");
+// Console.WriteLine(n / m);
+
+// Console.WriteLine("Indice oltre il range");
+// string[] animali = ["cane", "gatto"];
+// Console.WriteLine(animali[9]);
+
+// costrutto try /catch
+LogTitolo("Costrutto Try / Catch / Finally");
+try
 {
-    var t = oggi.Subtract(fi.LastWriteTime).TotalMinutes;
-    string dataModifica = $"({Math.Floor(t)} minuti fa)";
-
-    if (t < 5)
-    {
-        Console.ForegroundColor = ConsoleColor.Magenta;
-    }
-    else if (t < 30)
-    {
-        Console.ForegroundColor = ConsoleColor.DarkYellow;
-    }
-
-    Console.WriteLine($"{GetSeparatore(livello)}{fi.Name} {dataModifica}");
-    Console.ResetColor();
+    var r = n / m;
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);
+}
+finally
+{
+    Console.WriteLine("Eseguito anche se non c'ò stata eccezione");
 }
 
-string GetSeparatore(int livello)
+LogTitolo("Costrutto Try / Catch * n / Finally");
+StreamReader? file = null;
+
+try
 {
-    string retVal = "";
-    for (int i = 0; i < livello; i++)
-    {
-        retVal += "|   ";
-    }
+    file = new StreamReader("test.txt");
+    var testo = file.ReadLine();
 
-    retVal += "|-- ";
-
-    return retVal;
+    var numero = int.Parse(testo);
+}
+catch (FileNotFoundException ex)
+{
+    Console.WriteLine("File non trovato");
+    Console.WriteLine(ex.Message);
+}
+catch (FormatException ex)
+{
+    Console.WriteLine("Impossibile convertire la stringa in numero");
+    Console.WriteLine(ex.Message);
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Eccezione non gestita, vedi sotto.");
+    Console.WriteLine(ex.GetType());
+    Console.WriteLine(ex.Message);
+}
+finally
+{
+    file?.Close();
+    Console.WriteLine("Finally: File chiuso");
 }
 
+LogTitolo("Throw");
+void CalcolaAnniPatente(int? eta)
+{
+    if (!eta.HasValue)
+    {
+        throw new NullReferenceException("Specificare gli anni");
+    }
 
-var root = new DirectoryInfo("document");
-Esamina(root);
+    if (eta < 18)
+    {
+        throw new Exception("Non ha la patente!");
+    }
+
+    Console.WriteLine($"Ha la patente da {eta - 18} anni.");
+}
+
+int? anni = 19;
+
+try
+{
+    CalcolaAnniPatente(anni);
+}
+catch (NullReferenceException ex)
+{
+    Console.WriteLine("Eccezione null gestita");
+    Console.WriteLine(ex.Message);
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Eccezione gestita");
+    Console.WriteLine(ex.Message);
+}
+
+Console.WriteLine("FINITO");
